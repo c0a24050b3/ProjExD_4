@@ -92,6 +92,8 @@ class Bird(pg.sprite.Sprite):
         引数2 screen：画面Surface
         """
         sum_mv = [0, 0]
+        
+
         for k, mv in __class__.delta.items():
             if key_lst[k]:
                 sum_mv[0] += mv[0]
@@ -109,8 +111,11 @@ class Bird(pg.sprite.Sprite):
             self.hyper_life -= 1
             if self.hyper_life <= 0:
                 self.state = "normal"  # 通常状態に戻す
+        
         screen.blit(self.image, self.rect)
         # ----------------------------
+        
+
 
 
 class Bomb(pg.sprite.Sprite):
@@ -312,6 +317,11 @@ def main():
                     score.value -= 100 # スコア消費
 
 
+            if event.type == pg.KEYDOWN and event.key == pg.K_LCTRL:
+                bird.speed = 20  # 速度アップ
+        if event.type == pg.KEYUP:
+            if event.key == pg.K_LCTRL:
+                bird.speed = 10  # 元の速度に戻す
         screen.blit(bg_img, [0, 0])
 
         if tmr%200 == 0:  # 200フレームに1回，敵機を出現させる
