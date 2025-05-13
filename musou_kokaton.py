@@ -158,7 +158,6 @@ class Beam(pg.sprite.Sprite):
         self.speed = 10
 
         
-            
 
     def update(self):
         """
