@@ -156,6 +156,8 @@ class Beam(pg.sprite.Sprite):
         self.rect.centery = bird.rect.centery+bird.rect.height*self.vy
         self.rect.centerx = bird.rect.centerx+bird.rect.width*self.vx
         self.speed = 10
+        self.state = "active"
+        
 
     def update(self):
         """
@@ -242,6 +244,18 @@ class Score:
         screen.blit(self.image, self.rect)
 
 
+class EMP:
+    def __init__(self,enemy:pg.sprite.Group, bomb:pg.sprite.Group, scr:pg.surface):
+        
+
+
+        self.screen = pg.Surface((WIDTH,HEIGHT))
+        pg.draw.rect(self.screen, (255,255,0),(0,HEIGHT,WIDTH,0))
+        self.rect = self.screen.get_rect()
+        self.screen.set_alpha(120)
+
+        
+        
 def main():
     pg.display.set_caption("真！こうかとん無双")
     screen = pg.display.set_mode((WIDTH, HEIGHT))
@@ -288,6 +302,19 @@ def main():
             pg.display.update()
             time.sleep(2)
             return
+        if pg.key.get_pressed()[pg.K_e] and score.value >= -0:
+            score.value -= 20
+            pg.display.update()
+            time.sleep(0.05)
+
+            for emy in emys:
+                emy.interval = math.inf
+                emy.image = pg.transform.laplacian(emy.image)
+            
+            for bomb in bombs:
+                bomb.speed = bomb.speed / 2
+                bomb.state = "inactive"
+
 
         bird.update(key_lst, screen)
         beams.update()
