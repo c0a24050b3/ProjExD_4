@@ -89,6 +89,8 @@ class Bird(pg.sprite.Sprite):
         引数2 screen：画面Surface
         """
         sum_mv = [0, 0]
+        
+
         for k, mv in __class__.delta.items():
             if key_lst[k]:
                 sum_mv[0] += mv[0]
@@ -99,7 +101,10 @@ class Bird(pg.sprite.Sprite):
         if not (sum_mv[0] == 0 and sum_mv[1] == 0):
             self.dire = tuple(sum_mv)
             self.image = self.imgs[self.dire]
+        
         screen.blit(self.image, self.rect)
+        
+
 
 
 class Bomb(pg.sprite.Sprite):
@@ -263,6 +268,11 @@ def main():
                 return 0
             if event.type == pg.KEYDOWN and event.key == pg.K_SPACE:
                 beams.add(Beam(bird))
+            if event.type == pg.KEYDOWN and event.key == pg.K_LCTRL:
+                bird.speed = 20  # 速度アップ
+        if event.type == pg.KEYUP:
+            if event.key == pg.K_LCTRL:
+                bird.speed = 10  # 元の速度に戻す
         screen.blit(bg_img, [0, 0])
 
         if tmr%200 == 0:  # 200フレームに1回，敵機を出現させる
