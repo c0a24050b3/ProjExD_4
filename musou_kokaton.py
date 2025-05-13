@@ -285,6 +285,24 @@ class Score:
         self.image = self.font.render(f"Score: {self.value}", 0, self.color)
         screen.blit(self.image, self.rect)
 
+class Gravity(pg.sprite.Sprite):
+    """
+    重力場のクラス
+    """
+    def __init__(self,life):
+        super().__init__()
+        self.life = life  # 発動時間
+        self.image = pg.Surface((WIDTH, HEIGHT))  # 空のSurface
+        pg.draw.rect(self.image, (0,0,0),(0, HEIGHT, WIDTH, 0))  # rectにdraw
+        self.rect = self.image.get_rect()
+        self.image.set_alpha(128)  # Surfaceの透明度
+
+    def update(self):
+        self.life -= 1  # lifeの減算
+        if self.life < 0:
+            self.kill()
+        
+
 
 def main():
     pg.display.set_caption("真！こうかとん無双")
@@ -297,6 +315,7 @@ def main():
     beams = pg.sprite.Group()
     exps = pg.sprite.Group()
     emys = pg.sprite.Group()
+    gravity_group = pg.sprite.Group()
 
     tmr = 0
     clock = pg.time.Clock()
@@ -322,6 +341,8 @@ def main():
         if event.type == pg.KEYUP:
             if event.key == pg.K_LCTRL:
                 bird.speed = 10  # 元の速度に戻す
+            if event.type == pg.K_RETURN:  # 重力場の画面表示
+                screen.blit(pg.draw)
         screen.blit(bg_img, [0, 0])
 
         if tmr%200 == 0:  # 200フレームに1回，敵機を出現させる
@@ -353,6 +374,17 @@ def main():
                 return
         
 
+        
+        if pg.key.get_pressed()[pg.K_RETURN] and score.value >= 200:  # エンターキー押したときの処理
+            gravity = Gravity(400)
+            gravity_group.add(gravity)
+            score.value -= 200
+
+        for gravity in gravity_group:  # 発動したときのbombとenemyの処理
+            for bomb in pg.sprite.spritecollide(gravity, bombs, True):
+                exps.add(Explosion(bomb, 50))
+            for enemy in pg.sprite.spritecollide(gravity, emys, True):
+                exps.add(Explosion(enemy, 50))
 
         bird.update(key_lst, screen)
         beams.update()
@@ -364,6 +396,8 @@ def main():
         exps.update()
         exps.draw(screen)
         score.update(screen)
+        gravity_group.update()
+        gravity_group.draw(screen)
         pg.display.update()
         tmr += 1
         clock.tick(50)
